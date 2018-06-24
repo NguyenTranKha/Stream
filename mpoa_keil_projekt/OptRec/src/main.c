@@ -38,6 +38,9 @@ static volatile bool frame_flag = false;
 int main(void){
 	bool err;
 	
+	//NguyenTranKha
+	//Kha nguyen Tran
+	
 	// System init
 	SystemInit();
 	STM_LedInit();

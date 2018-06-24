@@ -1,1 +1,2 @@
 http://www.urel.feec.vutbr.cz/MPOA/2014/cam-ov7670
+DMA

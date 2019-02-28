@@ -34,6 +34,39 @@ static volatile uint8_t STM_mode = 0;
 static volatile bool btn_pressed = false;
 static volatile bool sett_mode = true;
 static volatile bool frame_flag = false;
+int counter;
+
+void delay(){
+	int i = 80000;
+	while(--i);
+}
+
+void Init_Uart()
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	USART_InitTypeDef USART_InitStructure;
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1,ENABLE);
+	
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;
+	GPIO_InitStructure.GPIO_Pin   = GPIO_Pin_9 | GPIO_Pin_10;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOA,&GPIO_InitStructure);
+	
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource9 ,GPIO_AF_USART1);
+	GPIO_PinAFConfig(GPIOA,GPIO_PinSource10 ,GPIO_AF_USART1);
+	
+	USART_InitStructure.USART_BaudRate            = 9600;
+	USART_InitStructure.USART_Mode                = USART_Mode_Tx | USART_Mode_Rx;
+	USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+	USART_InitStructure.USART_Parity							= USART_Parity_No;
+	USART_InitStructure.USART_WordLength					= USART_WordLength_8b;
+	USART_InitStructure.USART_StopBits            = USART_StopBits_1;
+	USART_Init(USART1,&USART_InitStructure);
+	USART_Cmd(USART1, ENABLE);
+}
 
 int main(void){
 	bool err;
@@ -42,6 +75,7 @@ int main(void){
 	//Kha nguyen Tran
 	
 	// System init
+	Init_Uart();
 	SystemInit();
 	STM_LedInit();
 	STM_ButtonInit();
@@ -100,6 +134,14 @@ int main(void){
 					STM_LedOn(LED_RED);
 					
 					DCMI_CaptureCmd(DISABLE);
+					
+					counter = 0;
+					
+					while(counter < IMG_ROWS * IMG_COLUMNS){
+						USART_SendData(USART1, frame_buffer[counter]);
+						counter++;
+						delay();
+					}
 				}
 			}
 			btn_pressed = false;

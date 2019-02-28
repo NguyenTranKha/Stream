@@ -244,7 +244,7 @@ bool OV7670_init(void){
 
 	// Configure camera registers
 	for(i=0; i<OV7670_REG_NUM ;i++){
-		data = OV7670_reg[i][1]; 
+		data = OV7670_reg[i][1];
 		err = SCCB_write_reg(OV7670_reg[i][0], &data);
 
 		if (err == true)
